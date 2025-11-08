@@ -2,6 +2,7 @@ from config import DOMAINS, PASSWORD_CONFIG, YEAR_CONFIG
 from faker import Faker
 from unidecode import unidecode
 import random
+import json
 
 faker = Faker('pl-PL')
 
@@ -39,12 +40,10 @@ def generatePassword():
     
     passwordLen = random.randint(min_length, max_length)
     passwordChars = []
-    print(passwordLen)
 
     for char in range(passwordLen):
         char = random.choice(chars)
         passwordChars.append(char)
-        print(char)
     
     password = ''.join(passwordChars)
 
@@ -84,24 +83,24 @@ def generateBirthDate():
     birthDate = f'{month:02d}/{day:02d}/{year}'
     return birthDate
 
-def generatePerson():
-    firstName = generateFirstName()
-    lastName = generateLastName()
+def generatePerson(firstName, lastName, email, password, birthDate):
     person = {
         'firstName': firstName,
         'lastName': lastName,
-        'email': generateEmail(firstName, lastName),
-        'password': generatePassword(),
-        'birthDate': generateBirthDate()
+        'email': email,
+        'password': password,
+        'birthDate': birthDate
     }
 
-firstName = generateFirstName()
-print(firstName)
-lastName = generateLastName()
-print(lastName)
-email = generateEmail(firstName, lastName)
-print(email)
-password = generatePassword()
-print(password)
-birthDate = generateBirthDate()
-print(birthDate)
+    result = [firstName, lastName, email, password, birthDate]
+    print(f'Generated data: {result}')
+    return person
+
+def saveToJSON(person):
+    filename = '../test_data.json'
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(person, f, indent=4, ensure_ascii=False)
+        print('Person saved to file')
+    except OSError as e:
+        print(f'Save file error: {e}')
