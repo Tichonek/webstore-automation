@@ -1,3 +1,6 @@
 node_modules/
 reports/
 cypress/test_data.json
+cypress/scripts/__pycache__
+cypress/scripts/__pycache__/config.cpython-313.pyc
+cypress/scripts/__pycache__/data_generators.cpython-313.pyc

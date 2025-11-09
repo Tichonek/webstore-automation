@@ -26,17 +26,20 @@ def generatePassword():
     max_length = PASSWORD_CONFIG['max_length']
     include_digits = PASSWORD_CONFIG['include_digits']
     include_specials = PASSWORD_CONFIG['include_specials']
-
+    special_chars = PASSWORD_CONFIG['special_chars']
+    chars_lower = PASSWORD_CONFIG['chars_lower']
+    chars_upper = PASSWORD_CONFIG['chars_upper']
+    digits = PASSWORD_CONFIG['digits']
 
     chars = []
-    chars.extend(char for char in 'abcdefghijklmnopqrstuvwxyz')
-    chars.extend(char for char in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    chars.extend(char for char in chars_lower)
+    chars.extend(char for char in chars_upper)
     
     if include_digits:
-        chars += '0123456789'
+        chars += digits
     
     if include_specials:
-        chars += '!@#$%^&*()'
+        chars += special_chars
     
     passwordLen = random.randint(min_length, max_length)
     passwordChars = []
@@ -45,6 +48,8 @@ def generatePassword():
         char = random.choice(chars)
         passwordChars.append(char)
     
+    random.shuffle(passwordChars)
+
     password = ''.join(passwordChars)
 
     return password
