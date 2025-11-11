@@ -64,26 +64,30 @@ def isLeapYear(year):
     if year % 4 == 0:
         return True
 
-def generateBirthDate():
-    min_year = YEAR_CONFIG['min_year']
-    max_year = YEAR_CONFIG['max_year']
+    return False
+
+def generateBirthDate(config=None):
+    if config is None:
+        config = YEAR_CONFIG
+
+    min_year = config['min_year']
+    max_year = config['max_year']
 
     year = random.randint(min_year, max_year)
-
     month = random.randint(1,12)
 
     
     if month in (1, 3, 5, 7, 8, 10, 12):
-        maxDay = random.randint(1, 31)
+        daysInMonth = random.randint(1, 31)
     elif month in (4, 6, 9, 11):
-        maxDay = random.randint(1, 30)
+        daysInMonth = random.randint(1, 30)
     elif month == 2:
         if isLeapYear(year):
-            maxDay = 29
+            daysInMonth = 29
         else:
-            maxDay = 28
+            daysInMonth = 28
 
-    day = random.randint(1,maxDay)
+    day = random.randint(1,daysInMonth)
     
     birthDate = f'{month:02d}/{day:02d}/{year}'
     return birthDate
