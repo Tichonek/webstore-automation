@@ -77,3 +77,35 @@ def test_generateBirthDate_lepa_year(mock_randint, mock_year_config):
 
     assert result == '02/29/2000'
     assert mock_randint.call_count == 3
+
+@pytest.fixture
+def mock_password_config():
+    return {
+        'min_length': 8,
+        'max_length': 8,
+        'include_digits': True,
+        'include_specials': True,
+        'special_chars': '!@',
+        'chars_lower': 'ab',
+        'chars_upper': 'CD',
+        'digits': '12'
+    }
+@patch('scripts.data_generators.random.randint')
+@patch('scripts.data_generators.random.choice')
+@patch('scripts.data_generators.random.shuffle')
+def test_generatePassword_basic(mock_shuffle, mock_choice, mock_randint, mock_password_config):
+    mock_randint.return_value = 8
+    mock_choice.side_effect = list('abCD12!@')
+    mock_shuffle.side_effect = lambda x: x
+
+    result = generatePassword(config=mock_password_config)
+
+    assert len(result) == 8
+    assert set(result).issubset(set('abCD12!@'))
+    assert result == 'abCD12!@'
+
+def test_generatePassword_no_digits_or_specials(mock_password_config):
+    mock_password_config['include_digits'] = False
+    mock_password_config['include_specials'] = False
+
+    

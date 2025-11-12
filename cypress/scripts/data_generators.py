@@ -21,25 +21,26 @@ def generateEmail(firstName, lastName):
     email = f'{firstName}.{lastName}{domain}'
     return email
 
-def generatePassword():
-    min_length = PASSWORD_CONFIG['min_length']
-    max_length = PASSWORD_CONFIG['max_length']
-    include_digits = PASSWORD_CONFIG['include_digits']
-    include_specials = PASSWORD_CONFIG['include_specials']
-    special_chars = PASSWORD_CONFIG['special_chars']
-    chars_lower = PASSWORD_CONFIG['chars_lower']
-    chars_upper = PASSWORD_CONFIG['chars_upper']
-    digits = PASSWORD_CONFIG['digits']
+def generatePassword(config=None):
+    if config is None:
+        config = PASSWORD_CONFIG
 
-    chars = []
-    chars.extend(char for char in chars_lower)
-    chars.extend(char for char in chars_upper)
+    min_length = config['min_length']
+    max_length = config['max_length']
+    include_digits = config['include_digits']
+    include_specials = config['include_specials']
+    special_chars = config['special_chars']
+    chars_lower = config['chars_lower']
+    chars_upper = config['chars_upper']
+    digits = config['digits']
+
+    chars = list(chars_lower + chars_upper)
     
     if include_digits:
-        chars += digits
+        chars += list(digits)
     
     if include_specials:
-        chars += special_chars
+        chars += list(special_chars)
     
     passwordLen = random.randint(min_length, max_length)
     passwordChars = []
