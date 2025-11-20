@@ -1,5 +1,6 @@
 from scripts.data_generators import *
 from unittest.mock import patch
+from unittest.mock import mock_open, patch, call
 import re
 import pytest
 
@@ -104,8 +105,82 @@ def test_generatePassword_basic(mock_shuffle, mock_choice, mock_randint, mock_pa
     assert set(result).issubset(set('abCD12!@'))
     assert result == 'abCD12!@'
 
+
 def test_generatePassword_no_digits_or_specials(mock_password_config):
     mock_password_config['include_digits'] = False
     mock_password_config['include_specials'] = False
 
+    with patch('scripts.data_generators.random.randint', return_value = 8), \
+        patch('scripts.data_generators.random.choice', side_effect = list('abCDabCD')), \
+        patch('scripts.data_generators.random.shuffle', lambda x: x):
+        
+        result = generatePassword(config=mock_password_config)
     
+    assert set(result).issubset(set('abCD'))
+    assert not any(c.isdigit() for c in result)
+    assert all(c in 'abCD' for c in result)
+
+def test_generatePassword_includes_specials_and_digits(mock_password_config):
+    mock_password_config['include_digits'] = True
+    mock_password_config['include_specials'] = True
+
+    with patch('scripts.data_generators.random.randint', return_value = 8), \
+        patch('scripts.data_generators.random.choice', side_effect = lambda seq: seq[0]), \
+        patch('scripts.data_generators.random.shuffle', lambda x: x):
+
+        result = generatePassword(config=mock_password_config)
+
+    assert len(result) == 8
+    allowed_chars = set('abcd12!@#$')
+    assert set(result).issubset(allowed_chars)
+
+@pytest.fixture
+def sample_person_data():
+    """Fixture zwracająca przykładowe dane osoby"""
+    return {
+        "firstName": "Jan",
+        "lastName": "Kowalski",
+        "email": "jan.kowalski@test.com",
+        "password": "Secret123!",
+        "birthDate": "12/31/1990"
+    }
+def test_generatePerson_returns_dict(sample_person_data):
+    person = generatePerson(**sample_person_data)
+
+    assert isinstance(person, dict)
+
+def test_generatePerson_contains_all_keys(sample_person_data):
+     person = generatePerson(**sample_person_data)
+     for key, value in sample_person_data.items():
+        assert person[key] == value
+
+def test_generatePerson_values_match_arguments(sample_person_data):
+    person = generatePerson(**sample_person_data)
+
+    for key, value in person.items():
+        assert person[key] == value
+
+def test_saveToJSON_calls_open_json_dump(sample_person_data):
+    m_open = mock_open()
+    with patch('builtins.open', m_open), \
+        patch('json.dump') as mock_json_dump, \
+        patch('builtins.print') as mock_print:
+
+        saveToJSON(sample_person_data)
+
+        m_open.assert_called_once_with('../test_data.json', 'w', encoding='utf-8')
+
+        mock_json_dump.assert_called_once_with(sample_person_data, m_open(), indent=4, ensure_ascii=False)
+
+        mock_print.assert_called_once_with('Person saved to file')
+
+def test_saveToJSON_handles_oserror(sample_person_data):
+    with patch('builtins.open', side_effect=OSError('Disk full')), \
+        patch('builtins.print') as mock_print:
+
+        saveToJSON(sample_person_data)
+
+        mock_print.assert_called_once()
+        args = mock_print.call_args[0][0]
+        assert 'Save file error' in args
+        assert 'Disk full' in args

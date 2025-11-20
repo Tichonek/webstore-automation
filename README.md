@@ -18,8 +18,9 @@ This repository presents my projects and examples of automated tests created usi
 
 ## How to run project
 
-1. npm install
-2. npx cypress open
+1. git clone https://github.com/Tichonek/webstore-automation.git
+2. npm install
+3. npx cypress open
 
 ## How to run python script
 1. cd cypress/scripts
