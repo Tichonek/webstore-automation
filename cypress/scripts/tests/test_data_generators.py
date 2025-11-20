@@ -1,4 +1,5 @@
 from scripts.data_generators import *
+from scripts.main import *
 from unittest.mock import patch
 from unittest.mock import mock_open, patch, call
 import re
@@ -184,3 +185,24 @@ def test_saveToJSON_handles_oserror(sample_person_data):
         args = mock_print.call_args[0][0]
         assert 'Save file error' in args
         assert 'Disk full' in args
+
+def test_main_integration(sample_person_data):
+    with patch('scripts.main.generateFirstName', return_value=sample_person_data['firstName']), \
+         patch('scripts.main.generateLastName', return_value=sample_person_data['lastName']), \
+         patch('scripts.main.generateEmail', return_value=sample_person_data['email']), \
+         patch('scripts.main.generatePassword', return_value=sample_person_data['password']), \
+         patch('scripts.main.generateBirthDate', return_value=sample_person_data['birthDate']), \
+         patch('scripts.main.generatePerson', return_value={}) as mock_person, \
+         patch('scripts.main.saveToJSON') as mock_save:
+
+        main()
+
+        mock_person.assert_called_once_with(
+            sample_person_data['firstName'],
+            sample_person_data['lastName'],
+            sample_person_data['email'],
+            sample_person_data['password'],
+            sample_person_data['birthDate'],
+        )
+
+        mock_save.assert_called_once_with({})
