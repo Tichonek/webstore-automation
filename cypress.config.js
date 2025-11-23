@@ -1,4 +1,5 @@
 const { defineConfig } = require("cypress");
+const { exec } = require('child_process')
 const fs = require("fs-extra");
 const path = require("path");
 
@@ -32,6 +33,19 @@ module.exports = defineConfig({
         cleanReportsAndScreenshots();
       });
 
+      on('task', {
+        runPythonGenerator() {
+          return new Promise((resolve, reject) => {
+            exec('python -X utf8 cypress/scripts/main.py', (error, stdout, stderr) => {
+              if (error) {
+                return reject(error);
+              }
+              resolve(stdout);
+            });
+          });
+        }
+      });
+
       return config;
     },
 
@@ -55,6 +69,7 @@ module.exports = defineConfig({
 
     viewportWidth: 1440,
     viewportHeight: 900,
+    supportFile: false,
 
     reporter: 'mochawesome',
     reporterOptions: {

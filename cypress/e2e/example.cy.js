@@ -35,4 +35,12 @@ describe('Open Homepage', () => {
         loginPage.clickNoAccountBtn();
         cy.url().should('include', 'controller=registration');
     })
+
+    it('Run data generator', () => {
+        cy.task('runPythonGenerator')
+
+        cy.readFile('cypress/test_data.json').then((data) => {
+            cy.log('Firs name: ', data.firstName)
+        })
+    })
 })
