@@ -27,3 +27,5 @@ export class LoginPage {
         this.elements.noAccountBtn().click();
     }
 }
+
+export default new LoginPage()
