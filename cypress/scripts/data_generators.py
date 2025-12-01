@@ -3,6 +3,7 @@ from faker import Faker
 from unidecode import unidecode
 import random
 import json
+import os
 
 faker = Faker('pl-PL')
 
@@ -235,7 +236,8 @@ def saveToJSON(person):
         print an error message.
     """
     
-    filename = '../test_data.json'
+    scriptDir = os.path.dirname(os.path.abspath(__file__))
+    filename = os.path.join(scriptDir, '..', 'test_data.json')
     try:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(person, f, indent=4, ensure_ascii=False)
