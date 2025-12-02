@@ -244,3 +244,12 @@ def saveToJSON(person):
         print('Person saved to file')
     except OSError as e:
         print(f'Save file error: {e}')
+    
+    # append all data to a new file
+    fullDataFilename = os.path.join(scriptDir, '..', 'full_data.jsonl')
+    try:
+        with open(fullDataFilename, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(person, ensure_ascii=False) + '\n')
+        print('Person appended to full data file')
+    except OSError as e:
+        print(f'Append file error: {e}')
